@@ -1497,6 +1497,16 @@
         }
       }
     },
+    "button.cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
     "button.removeAlert.cancel" : {
       "localizations" : {
         "ar" : {
@@ -17138,6 +17148,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "讓我們為你完成設置。此步驟不會花上一分鐘時間。"
+          }
+        }
+      }
+    },
+    "setup.whiskywine.download.failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wine download failed"
+          }
+        }
+      }
+    },
+    "setup.whiskywine.download.httpError" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server returned HTTP status %d. Wine could not be downloaded."
+          }
+        }
+      }
+    },
+    "setup.whiskywine.download.noFile" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The download completed but no file was received."
+          }
+        }
+      }
+    },
+    "setup.whiskywine.download.retry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
           }
         }
       }
