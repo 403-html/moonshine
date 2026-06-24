@@ -21,7 +21,7 @@ Moonshine is a maintained fork of Whisky, a native SwiftUI wrapper for Wine on m
 
 - **Wine Staging 11.10** — replaces the outdated CrossOver 22.1.1 (2023) bundled with the original
 - **Crash logs that actually work** — Wine output is captured in full, including page faults, DLL load failures, and exit codes
-- **OpenGL 3.2+ patch** — binary patch to Wine's macOS driver fixes context creation for SDL3 and other modern engines (offset was derived for 11.2; needs re-deriving for 11.10, see changelog)
+- **OpenGL 3.2+ patch** — binary patch to Wine's macOS driver fixes context creation for SDL3 and other modern engines (re-derived for the 11.10 build, offset `0x319cb`)
 - **macOS 26 tested** — verified on the latest macOS with Apple Silicon
 
 ## System Requirements
@@ -100,7 +100,7 @@ Each run creates a timestamped log with full Wine output, including crash detail
 
 **Solution:** Pin Wine Staging **11.10** (a real release) and surface download failures with a retry/quit dialog. The SemanticVersion package dependency was also switched from an SSH to an HTTPS URL so the project builds without GitHub SSH keys, and the leftover upstream Wine update check is disabled so it can't replace the pinned build.
 
-**Known follow-up:** the OpenGL `winemac.so` patch offset (`0x329fb`) was derived for the 11.2 build and no longer matches 11.10, so it is safely skipped until re-derived. D3D/Vulkan rendering is unaffected; only OpenGL 3.2+ games are.
+**OpenGL patch re-derived:** the `winemac.so` patch offset (`0x329fb`) was derived for the 11.2 build and pointed at an unrelated byte on 11.10, so the installer's safety guard skipped it and OpenGL 3.2+ context creation stayed broken. Disassembled the 11.10 build and found the same `test al,al; je` forward-compatible guard in `create_context` at offset `0x319cb` (`0x74` `je` → `0xeb` `jmp`); `WhiskyWineInstaller.swift` now patches there, and the byte-value guard still skips safely on any other build.
 
 ### v2.7.0-fork — DMG distribution with auto-download Wine setup
 
