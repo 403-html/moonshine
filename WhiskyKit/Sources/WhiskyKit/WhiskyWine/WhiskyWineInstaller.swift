@@ -84,8 +84,11 @@ public class WhiskyWineInstaller {
         }
     }
 
-    /// Patches winemac.so for OpenGL 3.2+ context creation (0x329fb: 0x74 JE -> 0xEB JMP).
-    /// Offset was derived from the 11.2 build; on other builds the guard below skips it safely.
+    /// Patches winemac.so so OpenGL 3.2+ core contexts are accepted even when the app does not
+    /// request the forward-compatible flag (winemac.drv otherwise rejects them with
+    /// ERROR_INVALID_VERSION_ARB). Flips the `test al,al; je` guard to an unconditional jump
+    /// (0x319cb: 0x74 JE -> 0xEB JMP). Offset is for the pinned 11.10 build; on other builds the
+    /// guard below skips it safely.
     private static func applyOpenGLPatch() {
         let winemacPath = libraryFolder
             .appending(path: "Wine")
@@ -103,7 +106,7 @@ public class WhiskyWineInstaller {
             let fileHandle = try FileHandle(forUpdating: winemacPath)
             defer { fileHandle.closeFile() }
 
-            let patchOffset: UInt64 = 0x329fb
+            let patchOffset: UInt64 = 0x319cb
             fileHandle.seek(toFileOffset: patchOffset)
 
             guard let currentByte = fileHandle.readData(ofLength: 1).first else {
