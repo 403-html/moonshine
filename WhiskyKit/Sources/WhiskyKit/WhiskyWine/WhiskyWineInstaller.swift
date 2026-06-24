@@ -134,41 +134,10 @@ public class WhiskyWineInstaller {
     }
 
     public static func shouldUpdateWhiskyWine() async -> (Bool, SemanticVersion) {
-        let versionPlistURL = "https://data.getwhisky.app/Wine/WhiskyWineVersion.plist"
-        let localVersion = whiskyWineVersion()
-
-        var remoteVersion: SemanticVersion?
-
-        if let remoteUrl = URL(string: versionPlistURL) {
-            remoteVersion = await withCheckedContinuation { continuation in
-                URLSession(configuration: .ephemeral).dataTask(with: URLRequest(url: remoteUrl)) { data, _, error in
-                    do {
-                        if error == nil, let data = data {
-                            let decoder = PropertyListDecoder()
-                            let remoteInfo = try decoder.decode(WhiskyWineVersion.self, from: data)
-                            let remoteVersion = remoteInfo.version
-
-                            continuation.resume(returning: remoteVersion)
-                            return
-                        }
-                        if let error = error {
-                            print(error)
-                        }
-                    } catch {
-                        print(error)
-                    }
-
-                    continuation.resume(returning: nil)
-                }.resume()
-            }
-        }
-
-        if let localVersion = localVersion, let remoteVersion = remoteVersion {
-            if localVersion < remoteVersion {
-                return (true, remoteVersion)
-            }
-        }
-
+        // Moonshine pins Wine Staging 11.2 from Gcenx. The upstream update feed
+        // (data.getwhisky.app) serves the original CrossOver-based build, so honoring
+        // it would uninstall the pinned Wine + OpenGL patch and replace it with the
+        // wrong binaries. Disable the remote update check entirely.
         return (false, SemanticVersion(0, 0, 0))
     }
 
