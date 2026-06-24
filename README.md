@@ -5,7 +5,7 @@
 
   [![macOS](https://img.shields.io/badge/macOS-14.0%2B-blue)](https://www.apple.com/macos/)
   [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-M1%2FM2%2FM3%2FM4-green)](https://support.apple.com/en-us/116943)
-  [![Wine](https://img.shields.io/badge/Wine-Staging%2011.2-purple)](https://github.com/Gcenx/macOS_Wine_builds)
+  [![Wine](https://img.shields.io/badge/Wine-Staging%2011.10-purple)](https://github.com/Gcenx/macOS_Wine_builds)
   [![License](https://img.shields.io/badge/License-GPL--3.0-orange)](LICENSE)
 
   Forked from [Whisky-App/Whisky](https://github.com/Whisky-App/Whisky) (archived May 2025)
@@ -19,9 +19,9 @@ Moonshine is a maintained fork of Whisky, a native SwiftUI wrapper for Wine on m
 
 ## What's different from Whisky?
 
-- **Wine Staging 11.2** (Feb 2026) — replaces the outdated CrossOver 22.1.1 (2023) bundled with the original
+- **Wine Staging 11.10** — replaces the outdated CrossOver 22.1.1 (2023) bundled with the original
 - **Crash logs that actually work** — Wine output is captured in full, including page faults, DLL load failures, and exit codes
-- **OpenGL 3.2+ support** — binary patch to Wine's macOS driver fixes context creation for SDL3 and other modern engines
+- **OpenGL 3.2+ patch** — binary patch to Wine's macOS driver fixes context creation for SDL3 and other modern engines (offset was derived for 11.2; needs re-deriving for 11.10, see changelog)
 - **macOS 26 tested** — verified on the latest macOS with Apple Silicon
 
 ## System Requirements
@@ -39,7 +39,7 @@ Moonshine is a maintained fork of Whisky, a native SwiftUI wrapper for Wine on m
 1. Download `Moonshine.dmg` from the [latest release](https://github.com/ybmeng/moonshine/releases/latest)
 2. Open the DMG and drag **Moonshine.app** to **Applications**
 3. Launch the app — the setup wizard will automatically:
-   - Download [Wine Staging 11.2](https://github.com/Gcenx/macOS_Wine_builds/releases/tag/11.2) from Gcenx
+   - Download [Wine Staging 11.10](https://github.com/Gcenx/macOS_Wine_builds/releases/tag/11.10) from Gcenx
    - Extract and install Wine into the correct directory structure
    - Apply the OpenGL 3.2+ patch to `winemac.so`
 4. Create a bottle and start running Windows programs
@@ -68,7 +68,7 @@ The script will:
 5. Copy `Moonshine.app` to `/Applications`
 6. Launch the app
 
-On first launch, the setup wizard auto-downloads Wine Staging 11.2 and applies the OpenGL patch — same as Method 1.
+On first launch, the setup wizard auto-downloads Wine Staging 11.10 and applies the OpenGL patch — same as Method 1.
 
 ### Build a DMG
 
@@ -93,6 +93,14 @@ Each run creates a timestamped log with full Wine output, including crash detail
 ---
 
 ## Changelog (from upstream Whisky v2.3.5)
+
+### v2.7.1-fork — Fix Wine download (404) and setup robustness
+
+**Problem:** The pinned Wine version `11.2` does not exist on Gcenx — its releases are `11.10, 11.9, 11.8, …`. So the auto-download always returned a 404 and setup could never complete. The download screen also ignored errors, leaving the wizard stuck on a progress bar.
+
+**Solution:** Pin Wine Staging **11.10** (a real release) and surface download failures with a retry/quit dialog. The SemanticVersion package dependency was also switched from an SSH to an HTTPS URL so the project builds without GitHub SSH keys, and the leftover upstream Wine update check is disabled so it can't replace the pinned build.
+
+**Known follow-up:** the OpenGL `winemac.so` patch offset (`0x329fb`) was derived for the 11.2 build and no longer matches 11.10, so it is safely skipped until re-derived. D3D/Vulkan rendering is unaffected; only OpenGL 3.2+ games are.
 
 ### v2.7.0-fork — DMG distribution with auto-download Wine setup
 

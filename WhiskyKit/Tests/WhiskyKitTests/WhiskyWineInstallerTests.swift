@@ -21,9 +21,6 @@ import SemanticVersion
 @testable import WhiskyKit
 
 final class WhiskyWineInstallerTests: XCTestCase {
-    /// Moonshine pins Gcenx Wine Staging 11.2, so the upstream update check must be
-    /// disabled — otherwise it would uninstall the pinned Wine and re-run setup against
-    /// the wrong (CrossOver-based) feed.
     func testUpstreamUpdateCheckIsDisabled() async {
         let (shouldUpdate, version) = await WhiskyWineInstaller.shouldUpdateWhiskyWine()
         XCTAssertFalse(shouldUpdate, "Upstream Wine auto-update must stay disabled for the Gcenx-pinned fork")

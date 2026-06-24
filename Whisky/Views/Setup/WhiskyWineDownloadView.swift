@@ -75,7 +75,7 @@ struct WhiskyWineDownloadView: View {
         completedBytes = 0
         totalBytes = 0
         let wineURL = "https://github.com/Gcenx/macOS_Wine_builds/"
-            + "releases/download/11.2/wine-staging-11.2-osx64.tar.xz"
+            + "releases/download/11.10/wine-staging-11.10-osx64.tar.xz"
         guard let url = URL(string: wineURL) else { return }
 
         downloadTask = URLSession(configuration: .ephemeral)

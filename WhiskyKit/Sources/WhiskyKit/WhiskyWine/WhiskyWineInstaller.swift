@@ -71,7 +71,7 @@ public class WhiskyWineInstaller {
             let versionPlist = libraryFolder
                 .appending(path: "WhiskyWineVersion")
                 .appendingPathExtension("plist")
-            let versionInfo = WhiskyWineVersion(version: SemanticVersion(11, 2, 0))
+            let versionInfo = WhiskyWineVersion(version: SemanticVersion(11, 10, 0))
             let encoder = PropertyListEncoder()
             encoder.outputFormat = .xml
             let data = try encoder.encode(versionInfo)
@@ -84,8 +84,8 @@ public class WhiskyWineInstaller {
         }
     }
 
-    /// Patches winemac.so to enable OpenGL 3.2+ context creation for SDL3-based games.
-    /// Changes byte at offset 0x329fb from 0x74 (JE) to 0xEB (JMP).
+    /// Patches winemac.so for OpenGL 3.2+ context creation (0x329fb: 0x74 JE -> 0xEB JMP).
+    /// Offset was derived from the 11.2 build; on other builds the guard below skips it safely.
     private static func applyOpenGLPatch() {
         let winemacPath = libraryFolder
             .appending(path: "Wine")
@@ -134,10 +134,7 @@ public class WhiskyWineInstaller {
     }
 
     public static func shouldUpdateWhiskyWine() async -> (Bool, SemanticVersion) {
-        // Moonshine pins Wine Staging 11.2 from Gcenx. The upstream update feed
-        // (data.getwhisky.app) serves the original CrossOver-based build, so honoring
-        // it would uninstall the pinned Wine + OpenGL patch and replace it with the
-        // wrong binaries. Disable the remote update check entirely.
+        // Disabled: the upstream feed serves the original Wine, which would replace our pinned build.
         return (false, SemanticVersion(0, 0, 0))
     }
 
